@@ -40,7 +40,7 @@
             <section class="section">
                 @if(!request()->is('admin','driver','user'))
                 <div class="section-header">
-                    @php $path = explode("/",request()->path()); $temp = ''; @endphp
+                    @php $path = explode("/",request()->path()); $temp = '';  $temp2 = ''; @endphp
                     @for($i=0;$i<count($path)-1;$i++)
                         @php $temp .= '/'.$path[$i]; @endphp
                     @endfor
@@ -50,8 +50,8 @@
                     <h1>@yield('title')</h1>
                     <div class="section-header-breadcrumb">
                         @for($i=0;$i<count($path)-1;$i++)
-                            @php $temp .= '/'.$path[$i]; @endphp
-                            <div class="breadcrumb-item active"><a href="{{url($temp)}}">{{$path[$i]}}</a></div>
+                            @php $temp2 .= '/'.$path[$i]; @endphp
+                            <div class="breadcrumb-item active"><a href="{{url($temp2)}}">{{$path[$i]}}</a></div>
                         @endfor
                         <div class="breadcrumb-item">{{end($path)}}</div>
                     </div>
