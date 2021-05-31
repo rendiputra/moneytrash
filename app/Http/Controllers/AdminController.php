@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\Address;
 use Auth;
 use Hash;
+use DB;
 
 class AdminController extends Controller
 {
@@ -80,9 +81,11 @@ class AdminController extends Controller
     public function list_account()
     {
         $account = User::all();
+        $addresses = DB::Table('addresses')->where('status',1)->get();
         $provinces = Province::pluck('name', 'id');
         return view('admin.list_account',[
             'account'=>$account,
+            'addresses'=>$addresses,
             'provinces'=>$provinces,
             ]);
     }

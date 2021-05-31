@@ -113,7 +113,7 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped table-inverse">
+                                <table class="table table-striped table-inverse table-inverse">
                                     <thead class="thead-inverse">
                                         <tr>
                                             <th>No</th>
