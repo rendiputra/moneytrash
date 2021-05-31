@@ -22,10 +22,8 @@
                         <table class="table table-striped table-inverse table-hover" id="table-1">
                             <thead>                                 
                                 <tr>
-                                    <th>
-                                        No.
-                                    </th>
-                                    <th>User</th>
+                                    <th>No.</th>
+                                    <th>Nama</th>
                                     <th>Email</th>
                                     <th>Alamat</th>
                                 </tr>
@@ -33,9 +31,16 @@
                             <tbody>
                                 @php $no = 1; @endphp
                                 @foreach($account as $acc)
-                                    <tr>
+                                    <tr class="clickable-row" data-href="{{route('admin.profile_account',$acc->id)}}" style="cursor: pointer;">
                                         <td>{{$no++}}</td>
-                                        <td><img src="{{asset('assets/images/avatar-1.png')}}" class="rounded-circle" width="35" data-toggle="tooltip" title="{{$acc->name}}">&nbsp;&nbsp; {{$acc->name}}</td>
+                                        <td><img src="{{asset('assets/images/avatar-1.png')}}" class="rounded-circle" width="35" data-toggle="tooltip" title="{{$acc->name}}">&nbsp;&nbsp; {{$acc->name}} 
+                                            @if($acc->role == 3)
+                                                (Admin)
+                                            @elseif($acc->role ==2)
+                                                (Driver)
+                                            @else
+                                                (User)
+                                            @endif</td>
                                         <td>{{$acc->email}}</td>
                                         <td>
                                             @foreach($addresses as $add)
@@ -57,4 +62,13 @@
     </div>
 </div>
 
+@endsection
+@section('scripts')
+<script>
+    jQuery(document).ready(function($) {
+        $(".clickable-row").click(function() {
+            window.location = $(this).data("href");
+        });
+    });
+</script>
 @endsection

@@ -34,18 +34,18 @@ class HomeController extends Controller
     {
         return view('home');
     }
-    public function profile()
+    public function settings()
     {
         $user = User::where('id',Auth::user()->id);
         $provinces = Province::pluck('name', 'id');
         $address = DB::Table('addresses')->where(['id_users' => Auth::user()->id, 'status' => 1,])->get();
-        return view('profile',[
+        return view('settings',[
             'user' => $user,
             'provinces' => $provinces,
             'address' => $address,
         ]);
     }
-    public function profile_store(Request $req)
+    public function settings_store(Request $req)
     {
         if(isset($_POST['change_profile']))
         {

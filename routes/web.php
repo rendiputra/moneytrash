@@ -40,6 +40,9 @@ Route::group(['middleware'=>'isAdmin'],function(){
         Route::get('/', [AdminController::class, 'index'])->name('admin.index');
         Route::prefix('accounts')->group(function () {
             Route::get('/', [AdminController::class, 'list_account'])->name('admin.list_account');
+            Route::get('/{id}', [AdminController::class, 'profile_account'])->name('admin.profile_account');
+            Route::post('/{id}', [AdminController::class, 'profile_account_store'])->name('admin.profile_account_store');
+            Route::post('/{id}/profile_account_address', [AdminController::class, 'profile_account_address_store'])->name('admin.profile_account.address.store');
             Route::get('/create', [AdminController::class, 'create_account'])->name('admin.create_account');
             Route::post('/create', [AdminController::class, 'create_account_store'])->name('admin.create_account.store');
         });
@@ -47,8 +50,8 @@ Route::group(['middleware'=>'isAdmin'],function(){
 });
 
 Route::get('/{locale}')->name('dashboard');
-Route::get('/{locale}/settings', [HomeController::class, 'profile'])->name('settings');
-Route::post('/{llocale}/settings', [HomeController::class, 'profile_store'])->name('settings.store');
+Route::get('/{locale}/settings', [HomeController::class, 'settings'])->name('settings');
+Route::post('/{llocale}/settings', [HomeController::class, 'settings_store'])->name('settings.store');
 
 Route::prefix('location')->group(function () {
     Route::post('/province', [LocationController::class, 'province_store'])->name('province.store');

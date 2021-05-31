@@ -89,4 +89,82 @@ class AdminController extends Controller
             'provinces'=>$provinces,
             ]);
     }
+    public function profile_account($id)
+    {
+        $user = DB::Table('users')
+                ->where('id',$id)
+                ->first();
+        $addresses = DB::Table('addresses')
+                    ->where('id_users',$id)
+                    ->where('status',1)
+                    ->get();
+        $provinces = Province::pluck('name', 'id');
+        return view('admin.profile_account',[
+            'user'=>$user,
+            'addresses'=>$addresses,
+            'provinces'=>$provinces,
+        ]);
+    }
+    public function profile_account_store(Request $req,$id)
+    {
+        if(isset($_POST['edit']))
+        {
+            return back()->with('edit','edit');
+        }
+        if(isset($_POST['edited']))
+        {
+            $profile = DB::Table('users')->where('id',$id)->update([
+                'name' => $req->name,
+                'email' => $req->email,
+            ]);
+            if($req->add_address == TRUE)
+            {
+                $create_address = Address::create([
+                    'id_users' => $id,
+                    'phone' => $req->phone,
+                    'id_provinces' => $req->province,
+                    'id_cities' => $req->city,
+                    'id_districts' => $req->district,
+                    'id_villages' => $req->village,
+                    'name' => $req->name_address,
+                    'address' => $req->address,
+                    'postal_code' => $req->postalcode,
+                ]);
+                if($create_address)
+                {
+                    return back()->with('profile', 'Berhasil menambahkan alamat');
+                }
+            }
+            if(!empty($req->name_address2))
+            {
+                $update_address = DB::Table('addresses')->where('id',$req->name_address2)->where('id_users',$id)->update([
+                    'phone' => $req->phone,
+                    'id_provinces' => $req->province,
+                    'id_cities' => $req->city,
+                    'id_districts' => $req->district,
+                    'id_villages' => $req->village,
+                    'name' => $req->name_address,
+                    'address' => $req->address,
+                    'postal_code' => $req->postalcode,
+                ]);
+                if($update_address)
+                {
+                    return back()->with('profile','Berhasil melakukan perubahan');
+                }
+            }
+            if($profile)
+            {
+                return back()->with('profile','Berhasil melakukan perubahan');
+            }
+            
+            return back();
+        }
+
+    }
+    public function profile_account_address_store(Request $req)
+    {
+        $addre = DB::Table('addresses')->where('id',$req->get('id'))->first();
+        return response()->json($addre);
+    }
+
 }
