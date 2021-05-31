@@ -77,4 +77,13 @@ class AdminController extends Controller
             return back()->with('success', 'Berhasil menambahkan akun');
         }
     }
+    public function list_account()
+    {
+        $account = User::all();
+        $provinces = Province::pluck('name', 'id');
+        return view('admin.list_account',[
+            'account'=>$account,
+            'provinces'=>$provinces,
+            ]);
+    }
 }

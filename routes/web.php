@@ -39,6 +39,7 @@ Route::group(['middleware'=>'isAdmin'],function(){
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.index');
         Route::prefix('accounts')->group(function () {
+            Route::get('/', [AdminController::class, 'list_account'])->name('admin.list_account');
             Route::get('/create', [AdminController::class, 'create_account'])->name('admin.create_account');
             Route::post('/create', [AdminController::class, 'create_account_store'])->name('admin.create_account.store');
         });
