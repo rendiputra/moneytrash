@@ -147,7 +147,7 @@
             <div class="card">
             <form method="post" class="needs-validation" novalidate="">
                 <div class="card-header">
-                <h4>Edit Profile</h4>
+                <h4>Sampahku</h4>
                 </div>
                 <div class="card-body">
                     <div class="row">                               
