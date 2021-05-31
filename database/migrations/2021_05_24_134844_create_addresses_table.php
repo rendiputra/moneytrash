@@ -17,10 +17,10 @@ class CreateAddressesTable extends Migration
             $table->id();
             $table->integer('id_users');
             $table->string('phone');
-            $table->integer('id_provinces');
-            $table->integer('id_cities');
-            $table->integer('id_districts');
-            $table->integer('id_villages');
+            $table->char('id_provinces',10);
+            $table->char('id_cities',10);
+            $table->char('id_districts',10);
+            $table->char('id_villages',10);
             $table->string('name');
             $table->longText('address');
             $table->integer('postal_code');
