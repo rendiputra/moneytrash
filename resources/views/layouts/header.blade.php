@@ -6,6 +6,29 @@
 <ul class="navbar-nav navbar-right">
 
     @if(Auth::check())
+        <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg beep"><i class="far fa-bell"></i></a>
+            <div class="dropdown-menu dropdown-list dropdown-menu-right">
+                <div class="dropdown-header">Notifikasi</div>
+                <div class="dropdown-list-content dropdown-list-icons">
+                    @php $notifikasi = 1; @endphp
+                    @if($notifikasi != NULL)
+                        @php 
+                            $address = \DB::Table('addresses')->where('id_users', Auth::user()->id)->where('status',1)->first();
+                        @endphp
+                        
+                        <a href="{{ route('settings') }}#addresses" class="dropdown-item @if(empty($address)) dropdown-item-unread @endif">
+                            <div class="dropdown-item-icon bg-primary text-white">
+                            <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="dropdown-item-desc">
+                            Tambahkan alamat!
+                            <div class="time @if(empty($address)) text-primary @endif">{{ Auth::user()->created_at->diffForHumans() }}</div>
+                            </div>
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </li>
         <li class="dropdown">
             <a href="#" data-toggle="dropdown"
                class="nav-link dropdown-toggle nav-link-lg nav-link-user">

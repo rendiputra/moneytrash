@@ -6,6 +6,10 @@ use Illuminate\Http\Request;
 use DB;
 use Auth;
 use App\Models\User;
+use Laravolt\Indonesia\Models\Province;
+use Laravolt\Indonesia\Models\City;
+use Laravolt\Indonesia\Models\District;
+use Laravolt\Indonesia\Models\Village;
 
 class UserController extends Controller
 {

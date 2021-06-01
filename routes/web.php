@@ -25,7 +25,10 @@ Auth::routes();
 
 Route::group(['middleware'=>'isUser'],function(){
     Route::prefix('user')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('user.index');
+        Route::get('/', [HomeController::class, 'index'])->name('user.index');
+        Route::post('/types', [HomeController::class, 'types_store'])->name('user.types.store');
+        Route::post('/profile_account_address', [HomeController::class, 'profile_account_address_store'])->name('user.profile_account.address.store');
+        Route::get('/kocak/{id}', [HomeController::class, 'profile_account_address_kocak'])->name('user.profile_account.address.kocak');
     });
 });
 
@@ -40,11 +43,11 @@ Route::group(['middleware'=>'isAdmin'],function(){
         Route::get('/', [AdminController::class, 'index'])->name('admin.index');
         Route::prefix('accounts')->group(function () {
             Route::get('/', [AdminController::class, 'list_account'])->name('admin.list_account');
+            Route::get('/create', [AdminController::class, 'create_account'])->name('admin.create_account');
+            Route::post('/create', [AdminController::class, 'create_account_store'])->name('admin.create_account.store');
             Route::get('/{id}', [AdminController::class, 'profile_account'])->name('admin.profile_account');
             Route::post('/{id}', [AdminController::class, 'profile_account_store'])->name('admin.profile_account_store');
             Route::post('/{id}/profile_account_address', [AdminController::class, 'profile_account_address_store'])->name('admin.profile_account.address.store');
-            Route::get('/create', [AdminController::class, 'create_account'])->name('admin.create_account');
-            Route::post('/create', [AdminController::class, 'create_account_store'])->name('admin.create_account.store');
         });
     });
 });

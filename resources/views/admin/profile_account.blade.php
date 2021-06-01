@@ -4,23 +4,42 @@
 
 <div class="section-body">
     <div class="row mt-sm-4">
-        <div class="col-12 col-md-12 col-lg-5">
+        <div class="col-12 col-md-7">
             <div class="card profile-widget">
                 <div class="profile-widget-header">                     
                     <img alt="image" src="{{asset('assets/images/avatar-1.png')}}" class="rounded-circle profile-widget-picture">
                     <div class="profile-widget-items">
-                        <div class="profile-widget-item">
-                            <div class="profile-widget-item-value">187</div>
-                            <div class="profile-widget-item-label">Sampah</div>
-                        </div>
-                        <div class="profile-widget-item">
-                            <div class="profile-widget-item-value">6,8K</div>
-                            <div class="profile-widget-item-label">Saldo (Rp)</div>
-                        </div>
-                        <div class="profile-widget-item">
-                            <div class="profile-widget-item-value">0</div>
-                            <div class="profile-widget-item-label">Pertukaran</div>
-                        </div>
+                        @if($user->role == 1)
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">187</div>
+                                <div class="profile-widget-item-label">Sampah</div>
+                            </div>
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">{{number_format(Wallet::amount($user->id),0)}}</div>
+                                <div class="profile-widget-item-label">Saldo (Rp)</div>
+                            </div>
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">0</div>
+                                <div class="profile-widget-item-label">Pertukaran</div>
+                            </div>
+                        @elseif($user->role == 2)
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">0</div>
+                                <div class="profile-widget-item-label">Pickup</div>
+                            </div>
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">{{number_format(Wallet::amount($user->id),0)}}</div>
+                                <div class="profile-widget-item-label">Saldo (Rp)</div>
+                            </div>
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">0</div>
+                                <div class="profile-widget-item-label">Pertukaran</div>
+                            </div>
+                        @else
+                            <div class="profile-widget-item">
+                                <div class="profile-widget-item-value">Admin</div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <form method="POST">
@@ -42,8 +61,21 @@
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="{{ $user->email }}" required  @if (!session('edit')) disabled @endif>
                             </div>
                         </div>
+                        @if(session('edit'))
                         <div class="form-group row">
-                            <label for="name_address2" class="col-3 col-md-3 col-form-label">Alamat</label>
+                            <label for="role" class="col-md-3 col-form-label">Role</label>
+                            <div class="col-md-9">
+                                <select name="role" id="role" class="form-control">
+                                    <option value="" disabled selected>== Pilih Role ==</option>
+                                    <option value="1" @if($user->role == 1) SELECTED @endif>User</option>
+                                    <option value="2" @if($user->role == 2) SELECTED @endif>Driver</option>
+                                    <option value="3" @if($user->role == 3) SELECTED @endif>Admin</option>
+                                </select>
+                            </div>
+                        </div>
+                        @endif
+                        <div class="form-group row">
+                            <label for="name_address2" class="col-3 col-md-3 col-form-label">Nama Alamat</label>
                             <div class="col-10 col-md-7">
                                 <select name="name_address2" id="name_address2" class="form-control">
                                     <option value="" disabled selected>== Nama Alamat ==</option>
@@ -143,17 +175,41 @@
                 </form>
             </div>
         </div>
-        <div class="col-12 col-md-12 col-lg-7">
-            <div class="card">
-            <form method="post" class="needs-validation" novalidate="">
-                <div class="card-header">
-                    <h4>Sampahku</h4>
+        @if($user->role != 3)
+            <div class="col-12 col-md-5">
+                <div class="card card-hero">
+                    <div class="card-header">
+                        @if($user->role == 1)
+                            <div class="card-icon">
+                                <i class="fas fa-recycle"></i>
+                            </div>
+                            <h4>14</h4>
+                            <div class="card-description">Sampah</div>
+                            @else
+                            <div class="card-icon">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                            <h4>14</h4>
+                            <div class="card-description">Pickup</div>
+                        @endif
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="tickets-list">
+                            <a href="#" class="ticket-item">
+                                <div class="ticket-title">
+                                <h4>My order hasn't arrived yet</h4>
+                                </div>
+                                <div class="ticket-info">
+                                <div>Laila Tazkiah</div>
+                                <div class="bullet"></div>
+                                <div class="text-primary">1 min ago</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                </div>
-            </form>
             </div>
-        </div>
+        @endif
     </div>
 </div>
 @endsection

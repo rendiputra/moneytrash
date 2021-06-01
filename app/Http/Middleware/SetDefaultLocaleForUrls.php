@@ -16,7 +16,7 @@ class SetDefaultLocaleForUrls
      */
     public function handle($request, Closure $next)
     {
-        $name = '';
+        $name = "";
         if($request->is('user','user/*'))
         {
             $name = "user";

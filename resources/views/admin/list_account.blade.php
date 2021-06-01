@@ -43,13 +43,19 @@
                                             @endif</td>
                                         <td>{{$acc->email}}</td>
                                         <td>
+                                            @php $available = ''; @endphp
                                             @foreach($addresses as $add)
                                                 @if($add->id_users == $acc->id)
-                                                    <div class="badge badge-success">Tersedia</div>
-                                                    @else 
-                                                    <div class="badge badge-danger">Tidak tersedia</div>
+                                                    @php
+                                                        $available = TRUE;
+                                                    @endphp
                                                 @endif
                                             @endforeach
+                                            @if($available == TRUE)
+                                                <div class="badge badge-success">Tersedia</div>
+                                            @else
+                                                <div class="badge badge-danger">Tidak tersedia</div>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

@@ -116,6 +116,7 @@ class AdminController extends Controller
             $profile = DB::Table('users')->where('id',$id)->update([
                 'name' => $req->name,
                 'email' => $req->email,
+                'role' => $req->role,
             ]);
             if($req->add_address == TRUE)
             {

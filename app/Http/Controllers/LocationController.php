@@ -13,14 +13,14 @@ class LocationController extends Controller
     //
     public function province_store(Request $request)
     {
-        $cities = Province::pluck('name', 'id');
+        $cities = Province::pluck('name', 'id', 'meta');
 
         return response()->json($cities);
     }
     public function city_store(Request $request)
     {
         $cities = City::where('province_id', $request->get('id'))
-            ->pluck('name', 'id');
+            ->pluck('name', 'id', 'meta');
 
         return response()->json($cities);
     }
@@ -28,7 +28,7 @@ class LocationController extends Controller
     public function district_store(Request $request)
     {
         $district = District::where('city_id', $request->get('id'))
-            ->pluck('name', 'id');
+            ->pluck('name', 'id', 'meta');
 
         return response()->json($district);
     }
@@ -36,7 +36,7 @@ class LocationController extends Controller
     public function village_store(Request $request)
     {
         $village = Village::where('district_id', $request->get('id'))
-            ->pluck('name', 'id');
+            ->pluck('name', 'id', 'meta');
 
         return response()->json($village);
     }
