@@ -203,7 +203,7 @@
         });
         $(document).on('click', function(){
             $( ".input-wrapper" ).each( function( index, element ){
-                var price = parseInt($(element).find('#realprice'+index).val());
+                total += parseInt($(element).find('#realprice'+index).val());
             });
             console.log(total);
         });
