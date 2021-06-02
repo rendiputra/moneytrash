@@ -9,6 +9,8 @@ use Laravolt\Indonesia\Models\District;
 use Laravolt\Indonesia\Models\Village;
 use App\Models\User;
 use App\Models\Address;
+use App\Models\Type;
+use App\Models\TypeBank;
 use Auth;
 use Hash;
 use DB;
@@ -31,7 +33,7 @@ class AdminController extends Controller
         {
             return redirect()->route('driver.index');
         }
-        return view('home');
+        return view('admin.index');
     }
 
     public function create_account()
@@ -166,6 +168,112 @@ class AdminController extends Controller
     {
         $addre = DB::Table('addresses')->where('id',$req->get('id'))->first();
         return response()->json($addre);
+    }
+    public function garbage()
+    {
+        $types = DB::Table('types')->where('status',1)->get();
+        return view('admin.types_garbage',[
+            'types'=>$types,
+        ]);
+    }
+    public function garbage_store(Request $req)
+    {
+        
+        if(isset($_POST['submit']))
+        {
+            if($req->id == NULL)
+            {
+                $create_type = Type::create([
+                    'type' => $req->type,
+                    'price' => $req->price,
+                ]);
+                if($create_type)
+                {
+                    return back()->with('garbage', 'Berhasil menambahkan jenis sampah');
+                }
+            }
+            else
+            {
+                $update_type = DB::Table('types')->where([
+                    'id' => $req->id, 
+                    ])->update([
+                        'type' => $req->type,
+                        'price' => $req->price,
+                    ]);
+                if($update_type)
+                {
+                    return back()->with('garbage', 'Berhasil merubah jenis sampah');
+                }
+            }
+        }
+        if(isset($_POST['delete_garbage']))
+        {
+            if($req->id != NULL)
+            {
+                $delete_type = DB::Table('types')->where([
+                    'id' => $req->id, 
+                    ])->update([
+                        'status' => 0,
+                    ]);
+                if($delete_type)
+                {
+                    return back()->with('garbage', 'Berhasil menghapus jenis sampah');
+                }
+            }
+            return back();
+        }
+    }
+    public function banks()
+    {
+        $types = DB::Table('type_banks')->where('status',1)->get();
+        return view('admin.types_bank',[
+            'types'=>$types,
+        ]);
+    }
+    public function banks_store(Request $req)
+    {
+        
+        if(isset($_POST['submit']))
+        {
+            if($req->id == NULL)
+            {
+                $create_type = TypeBank::create([
+                    'name' => $req->name,
+                ]);
+                if($create_type)
+                {
+                    return back()->with('bank', 'Berhasil menambahkan nama bank');
+                }
+            }
+            else
+            {
+                $update_type = DB::Table('type_banks')->where([
+                    'id' => $req->id, 
+                    ])->update([
+                        'name' => $req->name,
+                    ]);
+                if($update_type)
+                {
+                    return back()->with('bank', 'Berhasil merubah nama bank');
+                }
+            }
+        }
+        if(isset($_POST['delete_bank']))
+        {
+            if($req->id != NULL)
+            {
+                $delete_type = DB::Table('type_banks')->where([
+                    'id' => $req->id, 
+                    ])->update([
+                        'status' => 0,
+                    ]);
+                if($delete_type)
+                {
+                    return back()->with('bank', 'Berhasil menghapus nama bank');
+                }
+            }
+            return back();
+        }
     }
 
 }

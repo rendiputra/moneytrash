@@ -8,33 +8,18 @@
                 <div class="profile-widget-header">                     
                     <img alt="image" src="{{asset('assets/images/avatar-1.png')}}" class="rounded-circle profile-widget-picture">
                     <div class="profile-widget-items">
-                        @if(Auth::user()->role == 1)
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">0</div>
-                                <div class="profile-widget-item-label">Sampah</div>
-                            </div>
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">{{number_format(Wallet::amount(Auth::user()->id),0)}}</div>
-                                <div class="profile-widget-item-label">Saldo (Rp)</div>
-                            </div>
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">0</div>
-                                <div class="profile-widget-item-label">Pertukaran</div>
-                            </div>
-                        @elseif(Auth::user()->role == 2)
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">0</div>
-                                <div class="profile-widget-item-label">Pickup</div>
-                            </div>
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">{{number_format(Wallet::amount(Auth::user()->id),0)}}</div>
-                                <div class="profile-widget-item-label">Saldo (Rp)</div>
-                            </div>
-                            <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">0</div>
-                                <div class="profile-widget-item-label">Pertukaran</div>
-                            </div>
-                        @endif
+                        <div class="profile-widget-item">
+                            <div class="profile-widget-item-value">0</div>
+                            <div class="profile-widget-item-label">Pickup</div>
+                        </div>
+                        <div class="profile-widget-item">
+                            <div class="profile-widget-item-value">{{number_format(Wallet::amount(Auth::user()->id),0)}}</div>
+                            <div class="profile-widget-item-label">Saldo (Rp)</div>
+                        </div>
+                        <div class="profile-widget-item">
+                            <div class="profile-widget-item-value">0</div>
+                            <div class="profile-widget-item-label">Pertukaran</div>
+                        </div>
                     </div>
                 </div>
                 <form method="POST">
@@ -55,9 +40,6 @@
                             <div class="col-12 col-md-9">
                                 <select name="garbage" id="garbage" class="form-control">
                                     <option value="" selected>== Jenis Sampah ==</option>
-                                    @foreach($types as $type)
-                                        <option value="{{$type->id}}">{{$type->type}}</option>
-                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -106,19 +88,11 @@
         <div class="col-12 col-md-5">
             <div class="card card-hero">
                 <div class="card-header">
-                    @if(Auth::user()->role == 1)
-                        <div class="card-icon">
-                            <i class="fas fa-recycle"></i>
-                        </div>
-                        <h4>0</h4>
-                        <div class="card-description">Sampah</div>
-                        @else
                         <div class="card-icon">
                             <i class="fas fa-box-open"></i>
                         </div>
                         <h4>14</h4>
                         <div class="card-description">Pickup</div>
-                    @endif
                 </div>
                 <div class="card-body p-0">
                     <div class="tickets-list">

@@ -18,6 +18,7 @@ class CreateBanksTable extends Migration
             $table->integer('id_wallets');
             $table->integer('id_type_banks');
             $table->string('number');
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

@@ -25,10 +25,10 @@ Auth::routes();
 
 Route::group(['middleware'=>'isUser'],function(){
     Route::prefix('user')->group(function () {
-        Route::get('/', [HomeController::class, 'index'])->name('user.index');
-        Route::post('/types', [HomeController::class, 'types_store'])->name('user.types.store');
-        Route::post('/profile_account_address', [HomeController::class, 'profile_account_address_store'])->name('user.profile_account.address.store');
-        Route::get('/kocak/{id}', [HomeController::class, 'profile_account_address_kocak'])->name('user.profile_account.address.kocak');
+        Route::get('/', [UserController::class, 'index'])->name('user.index');
+        Route::post('/types', [UserController::class, 'types_store'])->name('user.types.store');
+        Route::post('/profile_account_address', [UserController::class, 'profile_account_address_store'])->name('user.profile_account.address.store');
+        Route::get('/kocak/{id}', [UserController::class, 'profile_account_address_kocak'])->name('user.profile_account.address.kocak');
     });
 });
 
@@ -41,6 +41,10 @@ Route::group(['middleware'=>'isDriver'],function(){
 Route::group(['middleware'=>'isAdmin'],function(){
     Route::prefix('admin')->group(function () {
         Route::get('/', [AdminController::class, 'index'])->name('admin.index');
+        Route::get('/garbages', [AdminController::class, 'garbage'])->name('admin.garbage');
+        Route::post('/garbages', [AdminController::class, 'garbage_store'])->name('admin.garbage_store');
+        Route::get('/banks', [AdminController::class, 'banks'])->name('admin.banks');
+        Route::post('/banks', [AdminController::class, 'banks_store'])->name('admin.banks_store');
         Route::prefix('accounts')->group(function () {
             Route::get('/', [AdminController::class, 'list_account'])->name('admin.list_account');
             Route::get('/create', [AdminController::class, 'create_account'])->name('admin.create_account');

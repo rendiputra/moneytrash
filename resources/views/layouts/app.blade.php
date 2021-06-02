@@ -80,10 +80,10 @@
 
 <!-- Template JS File -->
 <script src="{{ asset('web/js/stisla.js') }}"></script>
+@yield('page_js')
 <script src="{{ asset('web/js/scripts.js') }}"></script>
 <script src="{{ mix('assets/js/profile.js') }}"></script>
 <script src="{{ mix('assets/js/custom/custom.js') }}"></script>
-@yield('page_js')
 @yield('scripts')
 <script>
     // Loading button plugin (removed from BS4)
