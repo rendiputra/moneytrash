@@ -1,9 +1,10 @@
 @extends('layouts.auth_app')
-@section('title','Forgot Password')
-    
+@section('title')
+    Forgot Password
+@endsection
 @section('content')
     <div class="card card-primary">
-        <div class="card-header"><h4>@yield('title')</h4></div>
+        <div class="card-header"><h4>Reset Password</h4></div>
 
         <div class="card-body">
             @if (session('status'))

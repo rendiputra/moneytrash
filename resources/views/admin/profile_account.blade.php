@@ -2,16 +2,40 @@
 @section('title','Profil: '.$user->name)
 @section('content')
 
+@if($user->role == 2)
+    @php $pickup = []; $no = 0; @endphp
+    @foreach($history_sell as $hs)
+        @if($hs->id_users == $user->id && $hs->status == 1)
+            @php array_push($pickup,$no++); @endphp
+        @endif
+    @endforeach
+@endif
+@if($user->role == 1)
+    @php $sum = 0; @endphp
+    @foreach($sell_user as $s)
+        @php $yaya = FALSE; @endphp
+        @foreach($history_sell as $hss)
+            @if($hss->id_sells == $s->id && $hss->status == 7)
+                @php $yaya = TRUE; @endphp
+            @endif
+        @endforeach
+            @if($yaya == FALSE)
+                @php $qty = explode(',',$s->qty); $sum += array_sum($qty); @endphp
+            @endif
+    @endforeach
+@endif
 <div class="section-body">
     <div class="row mt-sm-4">
         <div class="col-12 col-md-7">
             <div class="card profile-widget">
                 <div class="profile-widget-header">                     
-                    <img alt="image" src="{{asset('assets/images/avatar-1.png')}}" class="rounded-circle profile-widget-picture">
+                    <span class="image">
+                        <img alt="image" style="width: 100px; height: 100px;" src="{{asset($user->photo)}}" class="rounded-circle profile-widget-picture">
+                    </span>
                     <div class="profile-widget-items">
                         @if($user->role == 1)
                             <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">187</div>
+                                <div class="profile-widget-item-value">{{number_format($sum)}}</div>
                                 <div class="profile-widget-item-label">Sampah</div>
                             </div>
                             <div class="profile-widget-item">
@@ -24,7 +48,7 @@
                             </div>
                         @elseif($user->role == 2)
                             <div class="profile-widget-item">
-                                <div class="profile-widget-item-value">0</div>
+                                <div class="profile-widget-item-value">{{number_format(count($pickup))}}</div>
                                 <div class="profile-widget-item-label">Pickup</div>
                             </div>
                             <div class="profile-widget-item">
@@ -180,31 +204,69 @@
                 <div class="card card-hero">
                     <div class="card-header">
                         @if($user->role == 1)
-                            <div class="card-icon">
-                                <i class="fas fa-recycle"></i>
-                            </div>
-                            <h4>14</h4>
-                            <div class="card-description">Sampah</div>
+                            <h4 class="text-white">{{number_format($sum)}}</h4>
+                            <div class="card-description text-white">Sampah</div>
                             @else
-                            <div class="card-icon">
-                                <i class="fas fa-box-open"></i>
-                            </div>
-                            <h4>14</h4>
-                            <div class="card-description">Pickup</div>
+                            <h4 class="text-white">{{number_format(count($pickup))}}</h4>
+                            <div class="card-description text-white">Pickup</div>
                         @endif
                     </div>
                     <div class="card-body p-0">
                         <div class="tickets-list">
-                            <a href="#" class="ticket-item">
-                                <div class="ticket-title">
-                                <h4>My order hasn't arrived yet</h4>
-                                </div>
-                                <div class="ticket-info">
-                                <div>Laila Tazkiah</div>
-                                <div class="bullet"></div>
-                                <div class="text-primary">1 min ago</div>
-                                </div>
-                            </a>
+                            @if($user->role == 1)
+                                @php $no = count($sell_user); @endphp
+                                @foreach($sell_user as $se)
+                                    @php 
+                                        $garbage = explode(',',$se->id_types);
+                                        $qty = explode(',',$se->qty);
+                                        $uang = 0;
+                                    @endphp
+                                    <a href="#" class="ticket-item" data-toggle="modal" data-target="#ticket{{$se->id}}">
+                                        <div class="ticket-title">
+                                        <h4>Penjualan ke #{{$no--}}
+                                        </h4>
+                                        
+                                        </div>
+                                        <div class="ticket-info">
+                                            <div>{{$user->name}}</div>
+                                            <div class="bullet"></div>
+                                            <div class="text-primary">{{\Carbon\Carbon::parse($se->created_at)->diffForHumans()}}</div>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @else
+                                @php $id_sell = 0; $id_user = 0; @endphp
+                                @foreach($sell as $se)
+                                    @foreach($history_sell as $hs)
+                                        @if($hs->id_sells == $se->id && $hs->id_users != NULL)
+                                            @php $id_sell = $hs->id_sells; $id_user = $hs->id_users @endphp
+                                        @endif
+                                    @endforeach
+                                    @if($se->id == $id_sell && $id_user == $user->id)
+                                        @php 
+                                            $penjual = count($sell);
+                                            $garbage = explode(',',$se->id_types);
+                                            $qty = explode(',',$se->qty);
+                                            $uang = 0;
+                                        @endphp
+                                        <a href="#" class="ticket-item" data-toggle="modal" data-target="#ticket{{$se->id}}">
+                                            <div class="ticket-title">
+                                                <h4>IDS#{{$se->id}} 
+                                                </h4>
+                                            </div>
+                                            <div class="ticket-info">
+                                                @foreach($users as $u)
+                                                    @if($u->id == $se->id_users)
+                                                        <div>{{$u->name}}</div>
+                                                        @endif
+                                                    @endforeach
+                                                    <div class="bullet"></div>
+                                                    <div class="text-primary">{{\Carbon\Carbon::parse($se->created_at)->diffForHumans()}}</div>
+                                            </div>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -214,6 +276,213 @@
 </div>
 @endsection
 
+@section('modal')
+    @foreach($history_sell as $hss)
+        @php $qwew = 0; @endphp
+        @foreach($sell as $se)
+            @if($hss->id_sells == $se->id)
+                @php 
+                    $garbage = explode(',',$se->id_types);
+                    $qty = explode(',',$se->qty);
+                    $uang = 0;
+                @endphp
+                <div class="modal fade" id="ticket{{$se->id}}" tabindex="-1" aria-labelledby="ticketLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title">Rincian Sampah: IDS#{{$se->id}} 
+                                                    @php 
+                                                        for($i=0;$i<count($garbage);$i++)
+                                                        {
+                                                            foreach($types as $ty)
+                                                            {
+                                                                if($ty->id == $garbage[$i])
+                                                                {
+                                                                    $uang += $qty[$i] * $ty->price;
+                                                                }
+                                                            }
+                                                        }
+                                                    @endphp    
+                                                </h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div>
+                                                    @php 
+                                                        $price = '';
+                                                        $count = [];
+                                                        for($i=0;$i<count($garbage);$i++)
+                                                        {
+                                                            foreach($types as $ty)
+                                                            {
+                                                                if($ty->id == $garbage[$i])
+                                                                {
+                                                                    $price = $ty->price*$qty[$i];
+                                                                    // echo $qty[$i]. " Sampah " . $ty->type." Rp.".number_format($price)."<br> ";
+                                                                    echo number_format($qty[$i]). " Sampah " . $ty->type."<br> ";
+                                                                }
+                                                            }
+                                                            array_push($count, $price);
+                                                        }
+                                                        if($hss->id_sells == $se->id && $hss->status != 7)
+                                                        {
+                                                            $qwew = array_sum($count);
+                                                        }
+                                                        echo "Total: Rp.".number_format($qwew)."<br>Komisi Driver: Rp.".number_format($qwew/2);
+                                                    @endphp   
+                                                </div>
+                                                <div>
+                                                    @if($hss->id_sells == $se->id && $hss->status != 7)
+                                                        Sampah akan diambil oleh: @php $driver = '-'; @endphp
+                                                        @foreach($history_sell as $hs)
+                                                            @if($hs->id_sells == $se->id)
+                                                                    @foreach($users as $u)
+                                                                        @if($hs->id_users == $u->id)
+                                                                            @php $driver = $u->name @endphp
+                                                                        @endif
+                                                                    @endforeach
+                                                            @endif
+                                                        @endforeach
+                                                        {{$driver}}
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title">Alamat Pengambilan Sampah</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                @foreach($addressing as $adresing)
+                                                    @if($se->id_addresses == $adresing->id_address)
+                                                        {{$adresing->name." (".$adresing->phone.")"}}<br>
+                                                        {{$adresing->address.", ".$adresing->villages_name.", ".$adresing->districts_name.", ".$adresing->cities_name.", ".$adresing->province_name.", ".$adresing->postal_code}}
+                                                        @php $meta = json_decode($adresing->villages_meta); @endphp
+                                                        <iframe frameborder="0" style="border:0; width: 100%;" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyC0cxbPtjuB3gxlsG1ieliBJrmAIqF6mG8&language=id&q={{$adresing->villages_name}}, {{$adresing->districts_name}}&center={{$meta->lat}},{{$meta->long}}" height="200" allowfullscreen></iframe>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4 class="card-title">Status Penjualan</h4>
+                                            </div>
+                                            <div class="card-body activities">
+                                                @php $no = 1; @endphp
+                                                @php $now = []; @endphp
+                                                @foreach($history_sell as $hs)
+                                                    @if($hs->id_sells == $se->id)
+                                                        @php 
+                                                            $no = array_push($now,$hs); 
+                                                        @endphp
+                                                    @endif
+                                                @endforeach
+                                                @php $nox = count($now); $noxx = count($now); @endphp
+                                                @foreach($history_sell as $hs)
+                                                    @if($hs->id_sells == $se->id)
+                                                        <div class="activity">
+                                                            <div class="activity-icon bg-primary text-white shadow-primary">
+                                                                {{$nox--}}
+                                                            </div>
+                                                            <div class="activity-detail">
+                                                                <div class="mb-2">
+                                                                    <span class="text-job @if($nox == ($noxx-1)) text-black @endif">{{\Carbon\Carbon::parse($hs->created_at)->diffForHumans()}}</span>
+                                                                    <span class="bullet"></span>
+                                                                </div>
+                                                                @foreach($status_sell as $ss)
+                                                                    @if($ss->id == $hs->status)
+                                                                        @php $nama = ''; @endphp
+                                                                        <p>
+                                                                            @if($hs->status == 1)
+                                                                                @foreach($users as $u)
+                                                                                    @if($hs->id_sells == $se->id && $se->id_users == $u->id)
+                                                                                        @php $nama = $u->name; @endphp
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            @elseif($hs->status != 1 && $hs->status != 6 && $hs->status != 7)
+                                                                                @foreach($users as $u)
+                                                                                    @if($u->id == $hs->id_users)
+                                                                                        @php $nama = $u->name; @endphp
+                                                                                    @endif
+                                                                                @endforeach
+                                                                            @endif
+                                                                            {{$nama." ".$ss->name}}
+                                                                        </p>
+                                                                    @endif
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+                                                        @php 
+                                                            $no = array_push($now,$hs); 
+                                                        @endphp
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @php 
+                                $confirm2 = FALSE;
+                                $completed2 = FALSE;
+                                $cancel2 = FALSE;
+                                $proses = FALSE;
+                                $status = '';
+                                foreach($history_sell as $hsel)
+                                {
+                                    if($hsel->status == 5 && $hsel->status != 6 && $hsel->status != 7 && $hsel->id_sells == $se->id)
+                                    {
+                                        $confirm2 = TRUE;
+                                    }
+                                    if($hsel->status == 6 && $hsel->id_sells == $se->id)
+                                    {
+                                        $completed2 = TRUE;
+                                    }
+                                    if($hsel->status == 7 && $hsel->id_sells == $se->id)
+                                    {
+                                        $cancel2 = TRUE;
+                                    }
+                                    if($hsel->id_sells == $se->id && $hsel->status == 1 OR $hsel->status == 2 OR $hsel->status == 3 OR $hsel->status == 4)
+                                    {
+                                        $proses = TRUE;
+                                    }
+                                }
+                                if($confirm2 == TRUE && $completed2 == FALSE && $cancel2 == FALSE)
+                                {
+                                    for($i=0;$i<count($status_sell);$i++)
+                                    {
+                                        if($status_sell[$i] == $status_sell[5])
+                                        {
+                                            $status = '
+                                                <form method="POST">
+                                                    <input type="hidden" name="_token" value="'.csrf_token().'">
+                                                    <input type="hidden" name="id" value="'.$hss->id_sells.'">
+                                                    <input type="hidden" name="id_users" value="'.$hss->id_users.'">
+                                                    <input type="hidden" name="status" value="'.$status_sell[$i]->id.'">
+                                                    <button type="submit" class="btn btn-success" name="submit">'.str_replace(".","",$status_sell[$i]->name).'</button>
+                                                    <button type="submit" class="btn btn-danger" name="cancel" onclick="return deleted()">'.str_replace(".","",$status_sell[6]->name).'</button>
+                                                </form>
+                                            '; 
+                                        }
+                                    }
+                                }
+                            @endphp
+                            <div class="modal-footer">
+                                {!! $status !!}
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        @endforeach
+    @endforeach
+@endsection
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script>
