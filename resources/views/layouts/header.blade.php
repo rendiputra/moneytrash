@@ -6,17 +6,18 @@
 <ul class="navbar-nav navbar-right">
 
     @if(Auth::check())
-        <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg beep"><i class="far fa-bell"></i></a>
+        {{-- <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown" class="nav-link notification-toggle nav-link-lg beep"><i class="far fa-bell"></i></a>
             <div class="dropdown-menu dropdown-list dropdown-menu-right">
                 <div class="dropdown-header">Notifikasi</div>
                 <div class="dropdown-list-content dropdown-list-icons">
                     @php $notifikasi = 1; @endphp
                     @if($notifikasi != NULL)
                         @php 
-                            $address = \DB::Table('addresses')->where('id_users', Auth::user()->id)->where('status',1)->first();
+                            $address = DB::Table('addresses')->where('id_users', Auth::user()->id)->where('status',1)->first();
+                            $auth = Role::is().'.';
                         @endphp
                         
-                        <a href="{{ route('settings') }}#addresses" class="dropdown-item @if(empty($address)) dropdown-item-unread @endif">
+                        <a href="{{ route(Role::is().'.settings') }}#addresses " class="dropdown-item @if(empty($address)) dropdown-item-unread @endif">
                             <div class="dropdown-item-icon bg-primary text-white">
                             <i class="fas fa-map-marker-alt"></i>
                             </div>
@@ -28,12 +29,12 @@
                     @endif
                 </div>
             </div>
-        </li>
+        </li> --}}
         <li class="dropdown">
             <a href="#" data-toggle="dropdown"
-               class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-                <img alt="image" src="{{ asset('assets/images/avatar-1.png') }}"
-                     class="rounded-circle mr-1 thumbnail-rounded user-thumbnail ">
+               class="nav-link dropdown-toggle image nav-link-lg nav-link-user" style="padding: 0;">
+                <img alt="image" src="{{ asset(Auth::user()->photo) }}"
+                     class="rounded-circle mr-1 thumbnail-rounded user-thumbnail " style="width: 30px; height: 30px;">
                 <div class="d-sm-none d-lg-inline-block">
                     Halo, {{Auth::user()->name}}!</div>
             </a>
@@ -49,8 +50,8 @@
                         Saldo Rp.{{number_format(Wallet::amount(Auth::user()->id),0)}}
                     </div>
                 @endif
-                <a class="dropdown-item has-icon" href="{{ route('settings') }}" data-id="{{ \Auth::id() }}">
-                    <i class="fas fa-cog"></i>Peraturan</a>
+                <a class="dropdown-item has-icon" href="{{ route(Role::is().'.settings') }}" data-id="{{ Auth::id() }}">
+                    <i class="fas fa-cog"></i>Pengaturan</a>
                 <a href="{{ url('logout') }}" class="dropdown-item has-icon text-danger"
                    onclick="event.preventDefault(); localStorage.clear();  document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i> Logout

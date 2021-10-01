@@ -6,8 +6,12 @@ use Illuminate\Http\Request;
 use Auth;
 use DB;
 use Hash;
+use Validator;
 use App\Models\User;
 use App\Models\Address;
+use App\Models\Bank;
+use App\Models\TypeBank;
+use App\Models\HistoryPayment;
 use Laravolt\Indonesia\Models\Province;
 use Laravolt\Indonesia\Models\City;
 use Laravolt\Indonesia\Models\District;
@@ -31,29 +35,51 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+    
     public function settings()
     {
         $user = User::where('id',Auth::user()->id);
         $provinces = Province::pluck('name', 'id');
         $address = DB::Table('addresses')->where(['id_users' => Auth::user()->id, 'status' => 1,])->get();
+        $bank = DB::Table('banks')->where('id_users',Auth::user()->id)->get();
+        $type_bank = DB::Table('type_banks')->where('status',1)->get();
         return view('settings',[
             'user' => $user,
             'provinces' => $provinces,
             'address' => $address,
+            'bank' => $bank,
+            'type_bank' => $type_bank,
         ]);
     }
     public function settings_store(Request $req)
     {
         if(isset($_POST['change_profile']))
         {
+            $validator = Validator::make($req->all(), [
+                'image.*' => 'mimes:jpg,jpeg,png,webp'
+            ]); 
+
+            if($req->hasfile('image'))
+            {
+                $name = 'assets/images/'.strip_tags(str_replace(' ', '-', $req->name)).'_'.rand().'.'.$req->image->extension();
+                $req->image->move(public_path('assets/images'),$name);
+                $profile = DB::table('users')->where('id',Auth::user()->id)->update([
+                    'name' => $req->name,
+                    'photo'=>$name,
+                ]);
+                if($profile)
+                {
+                    return back()->with('profile','Berhasil melakukan perubahan');
+                }
+            }
             $profile = DB::Table('users')->where('id',Auth::user()->id)->update([
                 'name' => $req->name,
-                'email' => $req->email,
             ]);
             if($profile)
             {
                 return back()->with('profile','Berhasil melakukan perubahan');
             }
+            return back();
         }
         if(isset($_POST['change_password']))
         {
@@ -116,6 +142,7 @@ class HomeController extends Controller
                     return back()->with('address', 'Berhasil merubah alamat');
                 }
             }
+            return back();
         }
         if(isset($_POST['delete_address']))
         {
@@ -134,5 +161,92 @@ class HomeController extends Controller
             }
             return back();
         }
+        if(isset($_POST['submit_bank']))
+        {
+            if($req->id == NULL)
+            {
+                $create_bank = Bank::create([
+                    'id_users' => Auth::user()->id,
+                    'id_type_banks' => $req->type_bank,
+                    'number' => $req->number_bank,
+                    'status' => 1,
+                ]);
+                if($create_bank)
+                {
+                    return back()->with('bank', 'Berhasil menambahkan rekening');
+                }
+            }
+            else
+            {
+                $update_bank = DB::Table('banks')->where([
+                    'id' => $req->id, 
+                    'id_users' => Auth::user()->id,
+                    ])->update([
+                        'id_type_banks' => $req->type_bank,
+                        'number' => $req->number_bank,
+                    ]);
+                if($update_bank)
+                {
+                    return back()->with('bank', 'Berhasil merubah rekening');
+                }
+            }
+            return back();
+        }
+        if(isset($_POST['delete_bank']))
+        {
+            if($req->id != NULL)
+            {
+                $delete_bank = DB::Table('banks')->where([
+                    'id' => $req->id, 
+                    'id_users' => Auth::user()->id,
+                    ])->update([
+                        'status' => 0,
+                    ]);
+                if($delete_bank)
+                {
+                    return back()->with('bank', 'Berhasil menghapus rekening');
+                }
+            }
+            return back();
+        }
+    }
+    public function withdrawal()
+    {
+        $bank = DB::Table('banks')->where('id_users',Auth::user()->id)->where('status',1)->get();
+        $banks = DB::Table('banks')->where('id_users',Auth::user()->id)->get();
+        $history_payment = DB::Table('history_payments')->orderBy('created_at','DESC')->get();
+        $type_bank = DB::Table('type_banks')->where('status',1)->get();
+        $type_banks = DB::Table('type_banks')->get();
+        return view('withdrawal',[
+            'bank' => $bank,
+            'banks' => $banks,
+            'history_payment' => $history_payment,
+            'type_bank' => $type_bank,
+            'type_banks' => $type_banks,
+        ]);
+    }
+    public function withdrawal_store(Request $req)
+    {
+        $wallet = DB::Table('wallets')->where('id_users',Auth::user()->id)->first();
+        if($req->amount < 10000)
+        {
+            return back()->with('fail','Minimal penarikan adalah Rp.10,000');
+        }
+        if($req->amount <= $wallet->amount)
+        {
+            $create_history = HistoryPayment::Create([
+                'id_banks' => $req->bank,
+                'amount' => $req->amount,
+            ]);
+            if($create_history)
+            {
+                $total = $wallet->amount - $req->amount;
+                DB::Table('wallets')->where('id_users',Auth::user()->id)->update([
+                    'amount' => $total,
+                ]);
+                return back()->with('success','Berhasil melakukan penarikan');
+            }
+        }
+        return back();
     }
 }

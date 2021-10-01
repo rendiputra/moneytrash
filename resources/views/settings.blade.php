@@ -1,7 +1,6 @@
 @extends('layouts.app')
-@section('title','Peraturan')
+@section('title','Pengaturan')
 @section('content')
-
 <div class="container-fluid">
     <div class="row justify-content-center">
         
@@ -13,7 +12,7 @@
                 <div class="card-body">
                         <ul class="nav nav-pills flex-column" id="menuTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link @if (!session('password') && !$errors->any() && !session('address')) active @endif" id="profile-tab" data-toggle="tab" href="#profiles" role="tab" aria-controls="profile" aria-selected="true">Profil</a>
+                                <a class="nav-link @if (!session('password') && !$errors->any() && !session('address') && !session('bank')) active @endif" id="profile-tab" data-toggle="tab" href="#profiles" role="tab" aria-controls="profile" aria-selected="true">Profil</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link  @if (session('password') OR $errors->any()) active @endif" id="password-tab" data-toggle="tab" href="#passwords" role="tab" aria-controls="password" aria-selected="false">Password</a>
@@ -21,13 +20,18 @@
                             <li class="nav-item">
                                 <a class="nav-link @if (session('address')) active @endif" id="address-tab" data-toggle="tab" href="#addresses" role="tab" aria-controls="address" aria-selected="false">Alamat</a>
                             </li>
+                            @if(Auth::user()->role != 3)
+                                <li class="nav-item">
+                                    <a class="nav-link @if (session('bank')) active @endif" id="bank-tab" data-toggle="tab" href="#banks" role="tab" aria-controls="bank" aria-selected="false">Rekening</a>
+                                </li>
+                            @endif
                         </ul>
                 </div>
             </div>
         </div>
         <div class="col-md-9">
             <div class="tab-content no-padding" id="myTab2Content">
-                <div class="tab-pane fade @if (!session('password') && !$errors->any() && !session('address')) show active @endif" id="profiles" role="tabpanel" aria-labelledby="profile-tab">
+                <div class="tab-pane fade @if (!session('password') && !$errors->any() && !session('address') && !session('bank')) show active @endif" id="profiles" role="tabpanel" aria-labelledby="profile-tab">
                     <div class="card">
                         <div class="card-header">
                             {{ __('Profil') }}
@@ -38,18 +42,25 @@
                                     {{ session('profile') }}!
                                 </div>
                             @endif
-                            <form method="POST">
+                            <form method="POST" enctype="multipart/form-data">
                                 @csrf
+                                <div class="form-group row">
+                                    <div class="col-md-3 form-group">
+                                        <label>Foto profil:</label>
+                                        <br>
+                                        <label class="image__file-upload btn btn-secondary text-white" tabindex="2"> Pilih
+                                            <input type="file" name="image" id="pfImage" class="d-none" accept="image/*" >
+                                        </label>
+                                    </div>
+                                    <div class="col-4 image" style="padding: 0 150px 150px 20px;">
+                                        <img id='edit_preview_photo' class="img-thumbnail rounded-circle"
+                                             src="{{asset(Auth::user()->photo)}}" style="width: 150px; height: 150px; position: absolute;"/>
+                                    </div>
+                                </div>
                                 <div class="form-group row">
                                     <label for="name" class="col-md-3 col-form-label">Nama</label>
                                     <div class="col-md-9">
                                         <input type="text" class="form-control" name="name" id="name" placeholder="Nama Lengkap" value="{{ Auth::user()->name }}" required>
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <label for="email" class="col-md-3 col-form-label">Email</label>
-                                    <div class="col-md-9">
-                                        <input type="email" class="form-control" name="email" id="email" placeholder="Email" value="{{ Auth::user()->email }}" required>
                                     </div>
                                 </div>
                                 <div class="mt-4">
@@ -224,10 +235,101 @@
                                             <button type="submit" name="submit" class="btn btn-primary">Submit</button>
                                         </div>
                                         <div class="btn-group mr-2" role="group">
-                                            <button type="reset" id="reset" class="btn btn-warning">Reset</button>
+                                            <button type="reset" id="reset" class="btn btn-secondary">Reset</button>
                                         </div>
                                         <div class="btn-group mr-2" id="delete_address" style="display: none;" role="group">
                                             <button type="submit" name="delete_address" onclick="return deleted()" class="btn btn-danger">Hapus Alamat</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade @if (session('bank')) show active @endif" id="banks" role="tabpanel" aria-labelledby="bank-tab">
+                    <div class="card">
+                        <div class="card-header">
+                            {{ __('Daftar Rekening') }}
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-inverse table-inverse">
+                                    <thead class="thead-inverse">
+                                        <tr>
+                                            <th>No</th>
+                                            <th>Jenis Bank</th>
+                                            <th>Nomor Rekening</th>
+                                            <th></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php $no = 1; @endphp
+                                            @if(count($bank)>0 && !empty($bank))
+                                                @foreach($bank as $b)
+                                                    <tr>
+                                                        <td scope="row">{{$no++}}</td>
+                                                        @foreach($type_bank as $tb)
+                                                            @if($b->id_type_banks == $tb->id)
+                                                                <td>{{$tb->name}}</td>
+                                                            @endif
+                                                        @endforeach
+                                                        <td>{{$b->number}}</td>
+                                                        <td><input type="button" value="Ubah Rekening" id="bank{{$b->id}}" class="btn btn-sm btn-warning"></td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="5">Tidak ada nomor rekening!</td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="addreass" class="card">
+                        <div class="card-header">
+                            {{ __('Rekening') }}
+                        </div>
+                        <div class="card-body">
+                            @if (session('bank'))
+                                <div class="alert alert-success" role="alert">
+                                    {{ session('bank') }}!
+                                </div>
+                            @endif
+                            <form method="POST">
+                                @csrf
+                                <input type="hidden" id="id_bank" name="id" value="">
+                                <div class="form-group row">
+                                    <label for="type_bank" class="col-md-3 col-form-label">Jenis Rekening</label>
+                                    <div class="col-md-9" style="overflow-x: auto">
+                                        <div class="selectgroup w-100">
+                                            @foreach($type_bank as $tb)
+                                                <label class="selectgroup-item">
+                                                    <input type="radio" name="type_bank" value="{{$tb->id}}" class="selectgroup-input">
+                                                    <span class="selectgroup-button pb-5 py-3">{{$tb->name}}</span>
+                                                </label>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label for="number_bank" class="col-md-3 col-form-label">Nomor Rekening</label>
+                                    <div class="col-md-9">
+                                    <input type="number" name="number_bank" id="number_bank" class="form-control" placeholder="Nomor Rekening" aria-describedby="number_bank" required>
+                                    <small id="number_bank" class="text-muted">Nama Pemilik Rekening harus sesuai dengan Pemilik Akun.</small>
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <div class="btn-toolbar" role="toolbar">
+                                        <div class="btn-group mr-2" role="group">
+                                            <button type="submit" name="submit_bank" class="btn btn-primary">Submit</button>
+                                        </div>
+                                        <div class="btn-group mr-2" role="group">
+                                            <button type="reset" id="reset" class="btn btn-secondary">Reset</button>
+                                        </div>
+                                        <div class="btn-group mr-2" id="delete_bank" style="display: none;" role="group">
+                                            <button type="submit" name="delete_bank" onclick="return deleted_bank()" class="btn btn-danger">Hapus Rekening</button>
                                         </div>
                                     </div>
                                 </div>
@@ -246,6 +348,12 @@
     function deleted()
     {
         if(!confirm("Apakah kamu yakin ingin menghapus alamat ini?")){
+            event.preventDefault();
+        }
+    }
+    function deleted_bank()
+    {
+        if(!confirm("Apakah kamu yakin ingin menghapus nomor rekening ini?")){
             event.preventDefault();
         }
     }
@@ -324,6 +432,20 @@
                 });
                 $('#address').val("{{$add->address}}");
                 $('#postalcode').val("{{$add->postal_code}}");
+            });
+        @endforeach
+        @foreach($bank as $b)
+            $('#bank{{$b->id}}').on('click', function () {
+                $('html, body').animate({
+                    scrollTop: $("#banks").offset().top
+                },0);
+                $('#delete_bank').css('display','block');
+                $('#id_bank').val("{{$b->id}}");
+                var $radios = $('input:radio[name=type_bank]');
+                if($radios.is(':checked') === false) {
+                    $radios.filter('[value={{$b->id_type_banks}}]').prop('checked', true);
+                }
+                $('#number_bank').val("{{$b->number}}");
             });
         @endforeach
         $('#province').on('change', function () {

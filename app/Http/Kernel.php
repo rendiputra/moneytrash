@@ -21,10 +21,6 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-        \App\Http\Middleware\UserMiddleware::class,
-        \App\Http\Middleware\DriverMiddleware::class,
-        \App\Http\Middleware\AdminMiddleware::class,
-        \App\Http\Middleware\SetDefaultLocaleForUrls::class,
     ];
 
     /**
@@ -47,18 +43,6 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
-
-        'isUser' => [
-            \App\Http\Middleware\UserMiddleware::class,
-        ],
-
-        'isDriver' => [
-            \App\Http\Middleware\DriverMiddleware::class,
-        ],
-
-        'isAdmin' => [
-            \App\Http\Middleware\AdminMiddleware::class,
-        ],
     ];
 
     /**
@@ -78,9 +62,8 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'isUser' => \App\Http\Middleware\UserMiddleware::class,
-        'isDriver' => \App\Http\Middleware\DriverMiddleware::class,
         'isAdmin' => \App\Http\Middleware\AdminMiddleware::class,
-        'locale' => \App\Http\Middleware\AdminMiddleware::class,
+        'isDriver' => \App\Http\Middleware\DriverMiddleware::class,
+        'isUser' => \App\Http\Middleware\UserMiddleware::class,
     ];
 }
